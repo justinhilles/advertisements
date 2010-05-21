@@ -1,0 +1,6 @@
+/* <![CDATA[ */
+$(document).ready(function(){
+
+});
+/* ]]>*/
+
