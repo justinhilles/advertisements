@@ -208,7 +208,7 @@ if( !class_exists('Advertisement')):
       $ads = $Ad->Find();
       shuffle($ads);
       $ads = array_slice($ads,0,5);
-      $ret_data = null;
+      $ret_data = " ";
       foreach($ads as $ad )
       {
         if(!empty($ad->file_url)):
