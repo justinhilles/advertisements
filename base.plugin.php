@@ -96,7 +96,7 @@ if( !class_exists('Advertisement')):
         switch( $action )
         {
           case 'add-ad':
-            if($file = MagazineWordpressHelper::handleUpload($this -> vars['files']['upload']))
+            if($file = AdvertisementWordpressHelper::handleUpload($this -> vars['files']['upload']))
             {
               $Ad -> data['file_path'] = $file['file'];
               $Ad -> data['file_url']  = $file['url'];
@@ -107,7 +107,7 @@ if( !class_exists('Advertisement')):
           break;
           case 'edit-ad':
             $Ad -> setId($this->vars['id']);
-            if(!empty($this -> vars['files']['upload']['name']) && $file = MagazineWordpressHelper::handleUpload($this -> vars['files']['upload']))
+            if(!empty($this -> vars['files']['upload']['name']) && $file = AdvertisementWordpressHelper::handleUpload($this -> vars['files']['upload']))
             {
               $Ad -> data['file_path'] = $file['file'];
               $Ad -> data['file_url']  = $file['url'];

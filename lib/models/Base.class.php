@@ -60,7 +60,7 @@ class AdvertisementBase {
 
   public function _New()
   {
-    return magazine_a2o(array_fill_keys(array_keys($this -> fields), ''));
+    return ad_a2o(array_fill_keys(array_keys($this -> fields), ''));
   }
 
   public function Insert()
