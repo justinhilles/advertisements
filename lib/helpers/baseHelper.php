@@ -48,7 +48,7 @@ if(!function_exists('ad_a2o'))
 
 if(!function_exists('ad_select_tag'))
 {
-	function ad_select_tag( $name , $options = array() , $value , $attributes = NULL , $sort = NULL )
+	function ad_select_tag( $name , array $options , $value , $attributes = NULL , $sort = NULL )
 	{
 		$ret_data = "<select name=\"" . $name . "\" " . $attributes . ">\n";
 		$ret_data .= "<option value=\"&nbsp;\">&nbsp;</option>\n";

@@ -30,6 +30,7 @@ include(dirname(__FILE__) . '/lib/helpers/baseHelper.php');
 include(dirname(__FILE__) . '/lib/helpers/wordpressHelper.php');
 
 require_once(dirname(__FILE__) . '/lib/models/Ad.class.php');
+require_once(dirname(__FILE__) . '/lib/models/Group.class.php');
 require_once(dirname(__FILE__) . '/lib/BasePlugin.class.php');
 
 //Avoid name collisions.
@@ -53,6 +54,7 @@ if( !class_exists('Advertisement')):
       $this -> frontStylesheets = array();
       $this -> frontJavascripts = array('jquery' => self::JQUERY,'jqueryui' => self::JQUERYUI,'admin' => $this -> PLUGINURL . '/public/js/application.js');
       $this -> router();
+      $this -> wp = new AdvertisementWordpressHelper();
     }
 
     function __toString()
@@ -84,7 +86,10 @@ if( !class_exists('Advertisement')):
       add_menu_page('Advertisement', 'Advertisement', 10 , 'advertisement', array(&$this, 'adminView'));
       add_submenu_page( 'advertisement', 'List Ads', 'List Ads', 10 , 'list-ads', array(&$this, 'adminView'));
       add_submenu_page( 'advertisement', 'Add Ad', 'Add Ad', 10 , 'add-ad', array(&$this, 'adminView'));
+      add_submenu_page( 'advertisement', 'List Groups', 'List Groups', 10 , 'list-groups', array(&$this, 'adminView'));
+      add_submenu_page( 'advertisement', 'Add Group', 'Add Group', 10 , 'add-group', array(&$this, 'adminView'));
       add_submenu_page( 'advertisement', '', '', 10 , 'edit-ad', array(&$this, 'adminView'));
+      add_submenu_page( 'advertisement', '', '', 10 , 'edit-group', array(&$this, 'adminView'));
       add_submenu_page( 'advertisement', '', '', 10 , 'deactivate-ad', array(&$this, 'adminView'));
       add_submenu_page( 'advertisement', '', '', 10 , 'activate-ad', array(&$this, 'adminView'));
     }
@@ -93,11 +98,11 @@ if( !class_exists('Advertisement')):
     {
       if(isset($this -> vars['a']) && $action = $this -> vars['a'])
       {
-        global $Ad;
+        global $Ad, $Group;
         switch( $action )
         {
           case 'add-ad':
-            if($file = AdvertisementWordpressHelper::handleUpload($this -> vars['files']['upload']))
+            if($file = $this -> wp -> handleUpload($this -> vars['files']['upload']))
             {
               $Ad -> data['file_path'] = $file['file'];
               $Ad -> data['file_url']  = $file['url'];
@@ -108,7 +113,7 @@ if( !class_exists('Advertisement')):
           break;
           case 'edit-ad':
             $Ad -> setId($this->vars['id']);
-            if(!empty($this -> vars['files']['upload']['name']) && $file = AdvertisementWordpressHelper::handleUpload($this -> vars['files']['upload']))
+            if(!empty($this -> vars['files']['upload']['name']) && $file = $this -> wp -> handleUpload($this -> vars['files']['upload']))
             {
               $Ad -> data['file_path'] = $file['file'];
               $Ad -> data['file_url']  = $file['url'];
@@ -133,6 +138,12 @@ if( !class_exists('Advertisement')):
             $Ad -> Update();
             wp_redirect(admin_url('admin.php?page=list-ads'));
           break;
+          case 'add-group':
+              if($id = $Group -> Insert())
+              {
+                wp_redirect(admin_url('admin.php?page=edit-group&id=' . $id));
+              }
+          break;
         }
       }
     }
@@ -142,17 +153,23 @@ if( !class_exists('Advertisement')):
       if(isset($this -> vars['page']) && $this -> page = $this->vars['page'])
       {
         $this -> action = $this -> page;
-        global $Ad;
+        global $Ad, $Group;
         switch( $this -> page )
         {
           case 'list-ads':        
             $this -> ads = $Ad -> Find();
+          break;
+          case 'list-groups':
+            $this -> groups = $Group -> Find();
           break;
           case 'add-ad':
             $this -> ad = $Ad -> _New();
           break;
           case 'edit-ad':
             $this -> ad = $Ad -> Find( $this->vars['id'] );
+          break;
+           case 'edit-group':
+            $this -> group = $Group -> Find( $this->vars['id'] );
           break;
         }
       }

@@ -102,11 +102,18 @@ class AdvertisementBase {
     }
   }
 
-  function findByField( $field , $value )
+  function findOneBy( $field , $value )
   {
     global $wpdb;
     $sql = "SELECT * FROM `" . $this->table ."` WHERE `" . $field ."` = '" . $value . "'";
     return $wpdb->get_row($wpdb -> prepare($sql));
+  }
+
+  function findBy( $field , $value )
+  {
+    global $wpdb;
+    $sql = "SELECT * FROM `" . $this->table ."` WHERE `" . $field ."` = '" . $value . "'";
+    return $wpdb->get_results($wpdb -> prepare($sql));
   }
 
   function paginate()

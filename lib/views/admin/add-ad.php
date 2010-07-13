@@ -1,6 +1,6 @@
 <div class="wrap">
   <form action="" method="post" enctype="multipart/form-data">
-    <input type="hidden" name="advertisement[id]" value="<?php echo $id;?>" />
+    <input type="hidden" name="advertisement[id]" value="<?php echo $ad->ID;?>" />
     <input type="hidden" name="advertisement[a]" value="<?php echo $action;?>" />
     <h2>Ad</h2>
     <div id="poststuff" class="postbox">
@@ -24,6 +24,14 @@
         <p>
           <label for="advertisement[order]">Order</label><br />
           <input type="text" name="advertisement[order]" value="<?php echo $ad->url; ?>" />
+        </p>
+        <p>
+          <label for="advertisement[group_id]">Group</label><br />
+          <?php echo ad_select_tag('advertisement[group_id]', $Group -> findAsOptionsArray(), $ad -> group_id );?>
+        </p>
+        <p>
+          <label for="advertisement[post_id]">Link to Page or Post?</label><br />
+          <?php echo ad_select_tag('advertisement[post_id]', $wp -> findPostsAsOptionsArray(), $ad -> post_id );?>
         </p>
         <p>
           <label for="advertisement[upload]">Upload</label><br />

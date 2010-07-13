@@ -6,6 +6,7 @@
         <th width="20">ID</th>
         <th>Name</th>
         <th>URL</th>
+        <th>Group</th>
         <th>Status</th>
         <th>Action</th>
       </tr>
@@ -15,6 +16,7 @@
         <th width="20">ID</th>
         <th>Name</th>
         <th>URL</th>
+        <th>Group</th>
         <th>Status</th>
         <th>Action</th>
       </tr>
@@ -26,6 +28,7 @@
             <td><?php echo $ad->ID; ?></td>
             <td><?php echo $ad->name ?></td>
             <td><?php echo $ad->url; ?></td>
+            <td><?php echo $ad->group_id; ?></td>
             <td><?php echo $ad->status; ?></td>
             <td>
               <?php echo ($ad -> status == 'pending' ? sprintf('<a href="%s">%s</a>',admin_url('admin.php?advertisement[a]=activate-ad&id=' . $ad->ID), 'Activate') : sprintf('<a href="%s">%s</a>',admin_url('admin.php?advertisement[a]=deactivate-ad&id=' . $ad->ID), 'Deactivate'));?> /

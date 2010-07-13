@@ -116,5 +116,19 @@ class AdvertisementWordpressHelper {
 			foreach($fields as $field){$temp[$field->Field] = $field->Field;}
 			return $temp;
 	}
+
+    public function findPostsAsOptionsArray()
+    {
+      global $wpdb;
+      $sql = "SELECT * FROM $wpdb->posts WHERE post_type= 'page'";
+      foreach($wpdb->get_results($sql) as $page)
+      {
+        if(!empty($page -> post_name))
+        {
+          $pages[$page->ID] = ucfirst($page -> post_type) . ' - ' . ucfirst($page -> post_name);
+        }
+      }
+      return $pages;
+    }
 }
 ?>
