@@ -90,7 +90,7 @@ class AdvertisementBasePlugin {
 
   public function setAdminHead()
   {
-    if(isset($this -> vars['page']) && array_key_exists($this -> vars['page'], $this::$pages))
+    if(isset($this -> vars['page']) && array_key_exists($this -> vars['page'], $this -> pages))
     {
       add_action('admin_print_styles',      array(&$this, 'adminStyles'    ));
       add_action('admin_print_scripts',     array(&$this, 'adminScripts'   ));

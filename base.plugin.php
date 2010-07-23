@@ -41,7 +41,7 @@ if( !class_exists($PLUGIN))
     const DATA = 'advertisement';
     const FILE = __FILE__;
 
-    public static $pages = array(
+    var $pages = array(
        'advertisement'  => '',
        'list-ads'       => 'List Assets',
        'add-ad'         => 'Add Asset',
@@ -76,7 +76,7 @@ if( !class_exists($PLUGIN))
     function adminMenu()
     {
       add_menu_page('Advertisement', 'Advertisement', 10 , 'advertisement', array(&$this, 'adminView'));
-      foreach(self::$pages as $slug => $title)
+      foreach($this -> pages as $slug => $title)
       {
         add_submenu_page( 'advertisement', $title, $title, 10, $slug, array(&$this, 'adminView'));
       }
@@ -161,6 +161,16 @@ if( !class_exists($PLUGIN))
           break;
         }
       }
+    }
+
+    public function frontAction()
+    {
+
+    }
+
+    public function frontController()
+    {
+      
     }
 
     function render( $options = array() )
