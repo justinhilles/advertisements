@@ -34,26 +34,28 @@ require_once(dirname(__FILE__) . '/lib/models/Group.class.php');
 require_once(dirname(__FILE__) . '/lib/BasePlugin.class.php');
 
 //Avoid name collisions.
-if( !class_exists('Advertisement')):
+if( !class_exists($PLUGIN))
+{
   class Advertisement extends AdvertisementBasePlugin{
-
-    const JQUERY = 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js';
-    const JQUERYUI = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js';
+    
     const DATA = 'advertisement';
+    const FILE = __FILE__;
+
+    public static $pages = array(
+       'advertisement'  => '',
+       'list-ads'       => 'List Assets',
+       'add-ad'         => 'Add Asset',
+       'edit-ad'        => '',
+       'list-groups'    => 'List Groups',
+       'add-group'      => 'Add Group',
+       'edit-group'     => '',
+       'deactivate-ad'  => '',
+       'activate-ad'    => ''
+    );
 
     function __construct()
     {
       parent::__construct();
-      $this -> PLUGINPATH = trailingslashit(WP_PLUGIN_DIR .'/'. dirname(plugin_basename(__FILE__)));
-      $this -> AJAXPATH = $this -> PLUGINPATH . 'data/ajax.php';
-      $this -> PLUGINURL  = get_bloginfo('siteurl') . '/' . PLUGINDIR .'/'. dirname(plugin_basename(__FILE__));
-      $this -> ADMINTEMPLATES = $this -> PLUGINPATH . 'lib/views/admin/';
-      $this -> FRONTTEMPLATES = $this -> PLUGINPATH . 'lib/views/front/';
-      $this -> adminStylesheets = array('admin' => $this -> PLUGINURL . '/public/css/admin.css');
-      $this -> adminJavascripts = array('jquery' => self::JQUERY,'jqueryui' => self::JQUERYUI,'admin' => $this -> PLUGINURL . '/public/js/admin-application.js');
-      $this -> frontStylesheets = array();
-      $this -> frontJavascripts = array('jquery' => self::JQUERY,'jqueryui' => self::JQUERYUI,'admin' => $this -> PLUGINURL . '/public/js/application.js');
-      $this -> router();
       $this -> wp = new AdvertisementWordpressHelper();
     }
 
@@ -64,34 +66,20 @@ if( !class_exists('Advertisement')):
 
     function router()
     {
-      if($this->versionCheck())
+      parent::router();
+      if(!is_admin())
       {
-        if(is_admin())
-        {
-          add_action('admin_init',    array(&$this, 'getVars' ));
-          add_action('admin_init',    array(&$this, 'setAdmin' ));
-          add_action('admin_init',    array(&$this, 'adminAction' ));
-          add_action('admin_notices', array(&$this, 'adminController'));
-          add_action('admin_menu',    array(&$this, 'adminMenu'));
-        }
-        else
-        {
-          add_shortcode('advertisements',   array(&$this, 'render'));
-        }
+        add_shortcode('advertisements',   array(&$this, 'render'));
       }
     }
 
     function adminMenu()
     {
       add_menu_page('Advertisement', 'Advertisement', 10 , 'advertisement', array(&$this, 'adminView'));
-      add_submenu_page( 'advertisement', 'List Ads', 'List Ads', 10 , 'list-ads', array(&$this, 'adminView'));
-      add_submenu_page( 'advertisement', 'Add Ad', 'Add Ad', 10 , 'add-ad', array(&$this, 'adminView'));
-      add_submenu_page( 'advertisement', 'List Groups', 'List Groups', 10 , 'list-groups', array(&$this, 'adminView'));
-      add_submenu_page( 'advertisement', 'Add Group', 'Add Group', 10 , 'add-group', array(&$this, 'adminView'));
-      add_submenu_page( 'advertisement', '', '', 10 , 'edit-ad', array(&$this, 'adminView'));
-      add_submenu_page( 'advertisement', '', '', 10 , 'edit-group', array(&$this, 'adminView'));
-      add_submenu_page( 'advertisement', '', '', 10 , 'deactivate-ad', array(&$this, 'adminView'));
-      add_submenu_page( 'advertisement', '', '', 10 , 'activate-ad', array(&$this, 'adminView'));
+      foreach(self::$pages as $slug => $title)
+      {
+        add_submenu_page( 'advertisement', $title, $title, 10, $slug, array(&$this, 'adminView'));
+      }
     }
 
     function adminAction()
@@ -198,7 +186,7 @@ if( !class_exists('Advertisement')):
       return $ret_data;
     }
   }	//END Registration Class
-endif;
+}
 
 if($$PLUGIN = new $PLUGIN)
 {

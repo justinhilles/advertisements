@@ -7,15 +7,48 @@
  */
 class AdvertisementBasePlugin {
 
+  const JQUERY   = 'http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js';
+  const JQUERYUI = 'http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.1/jquery-ui.min.js';
   const DATA = 'data';
 
   public function __construct()
   {
-    if (!session_id())
-    {
-      session_start();
-    }
+    if (!session_id())session_start();
     date_default_timezone_set('UTC');
+    $this -> PLUGINURL  = get_bloginfo('url') . '/' . PLUGINDIR .'/'. dirname(plugin_basename(constant(get_class($this) . '::FILE')));
+    $this -> PLUGINPATH = trailingslashit(WP_PLUGIN_DIR .'/'. dirname(plugin_basename(constant(get_class($this) . '::FILE'))));
+    $this -> AJAXPATH = $this -> PLUGINPATH . 'data/ajax.php';
+    $this -> ADMINTEMPLATES = $this -> PLUGINPATH . 'lib/views/admin/';
+    $this -> FRONTTEMPLATES = $this -> PLUGINPATH . 'lib/views/front/';
+    $this -> adminStylesheets = array('admin' => $this -> PLUGINURL . '/public/css/admin.css');
+    $this -> adminJavascripts = array('jquery' => self::JQUERY,'jqueryui' => self::JQUERYUI,'admin' => $this -> PLUGINURL . '/public/js/admin-application.js');
+    $this -> frontStylesheets = array();
+    $this -> frontJavascripts = array('jquery' => self::JQUERY,'jqueryui' => self::JQUERYUI,'admin' => $this -> PLUGINURL . '/public/js/application.js');
+    $this -> router();
+  }
+
+  public function router()
+  {
+    if($this->versionCheck())
+    {
+      if(is_admin())
+      {
+        global $Issue;
+        add_action('admin_init',              array(&$this, 'getVars'        ));
+        add_action('admin_init',              array(&$this, 'setAdminHead'   ));
+        add_action('admin_init',              array(&$this, 'adminAction'    ));
+        add_action('admin_notices',           array(&$this, 'adminController'));
+        add_action('admin_menu',              array(&$this, 'adminMenu'      ));
+      }
+      else
+      {
+        add_action('pre_get_posts',           array(&$this, 'getVars'        ));
+        add_action('pre_get_posts',           array(&$this, 'frontAction'    ));
+        add_action('pre_get_posts',           array(&$this, 'frontController'));
+        add_action('pre_get_posts',           array(&$this, 'setFrontHead'   ));
+        add_action('template_redirect',       array(&$this, 'frontView'      ));
+      }
+    }
   }
 
   public function versionCheck()
@@ -26,6 +59,16 @@ class AdvertisementBasePlugin {
       exit($this->EXTMSG);
     }
     return true;
+  }
+
+  public function install()
+  {
+    if($sql = file_get_contents($this -> PLUGINPATH . '/data/sql/install.sql'))
+    {
+      require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+      dbDelta($sql);
+      include($this -> PLUGINPATH . '/data/install.php');
+    }
   }
 
   public function getVars()
@@ -39,26 +82,40 @@ class AdvertisementBasePlugin {
     array_walk_recursive($data, array($this, 'setVar'));
     $this -> vars['files'] = self::getFiles($name);
   }
-  
-  public function setAdmin()
+
+  public function setVar( $value , $key )
   {
-    if(isset($this -> vars['page']))
+    $this -> vars[$key] = $value;
+  }
+
+  public function setAdminHead()
+  {
+    if(isset($this -> vars['page']) && array_key_exists($this -> vars['page'], $this::$pages))
     {
       add_action('admin_print_styles',      array(&$this, 'adminStyles'    ));
       add_action('admin_print_scripts',     array(&$this, 'adminScripts'   ));
     }
   }
-  
+
+  public function setFrontHead()
+  {
+    if(isset($this -> page))
+    {
+      add_action('wp_print_scripts',        array(&$this, 'frontScripts'   ));
+      add_action('wp_print_styles',         array(&$this, 'frontStyles'    ));
+    }
+  }
+
   public static function getFiles( $name )
   {
     if(isset($_FILES[$name]))
     {
       $ret_data = array();
       foreach($_FILES[$name] as $field => $values)
-      { 
+      {
         $i = 0;
         foreach($values as $f => $v)
-        { 
+        {
           $ret_data[$f][$field] = $v;
           $i++;
         }
@@ -66,21 +123,6 @@ class AdvertisementBasePlugin {
       return $ret_data;
     }
     return false;
-  }
-
-  public function setVar( $value , $key )
-  {
-    $this -> vars[$key] = $value;
-  }
-
-  public function install()
-  {
-    if($sql = file_get_contents($this -> PLUGINPATH . '/data/sql/install.sql'))
-    {
-      require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-      dbDelta($sql);
-      include($this -> PLUGINPATH . '/data/install.php');
-    }
   }
 
   public function frontStyles()
@@ -123,11 +165,6 @@ class AdvertisementBasePlugin {
         }
       }
     }
-  }
-
-  public function frontAction()
-  {
-
   }
 
   public function adminScripts()
