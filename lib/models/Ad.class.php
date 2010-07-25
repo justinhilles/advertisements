@@ -4,7 +4,7 @@ $model = 'Ad';
 
 require_once('Base.class.php');
 
-if(!class_exists('Ad'))
+if(!class_exists($model))
 {
   class Ad extends AdvertisementBase
   {
