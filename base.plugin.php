@@ -43,8 +43,8 @@ if( !class_exists($PLUGIN))
 
     var $pages = array(
        'advertisement'  => '',
-       'list-ads'       => 'List Assets',
-       'add-ad'         => 'Add Asset',
+       'list-ads'       => 'List Ads',
+       'add-ad'         => 'Add Ad',
        'edit-ad'        => '',
        'list-groups'    => 'List Groups',
        'add-group'      => 'Add Group',

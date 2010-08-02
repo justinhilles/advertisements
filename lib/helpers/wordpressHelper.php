@@ -130,5 +130,19 @@ class AdvertisementWordpressHelper {
       }
       return $pages;
     }
+
+    public function findAttachmentsAsOptionsArray()
+    {
+      global $wpdb;
+      $sql = "SELECT * FROM $wpdb->posts WHERE post_type= 'attachment'";
+      foreach($wpdb->get_results($sql) as $page)
+      {
+        if(!empty($page -> post_name))
+        {
+          $pages[$page->ID] = ucfirst($page -> post_type) . ' - ' . ucfirst($page -> post_name);
+        }
+      }
+      return $pages;
+    }
 }
 ?>

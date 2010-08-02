@@ -2,6 +2,7 @@ CREATE TABLE `wp_advertisements` (
 `ID` mediumint(9) NOT NULL AUTO_INCREMENT ,
 `group_id` mediumint(9) NOT NULL ,
 `post_id` mediumint(9) NOT NULL ,
+`attachment_id` mediumint(9) NOT NULL ,
 `name` text NOT NULL ,
 `status` varchar(40) NOT NULL default 'pending' ,
 `slug` text NOT NULL,

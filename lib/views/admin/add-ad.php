@@ -34,6 +34,10 @@
           <?php echo ad_select_tag('advertisement[post_id]', $wp -> findPostsAsOptionsArray(), $ad -> post_id );?>
         </p>
         <p>
+          <label for="advertisement[attachment_id]">Link to Media?</label><br />
+          <?php echo ad_select_tag('advertisement[attachment_id]', $wp -> findAttachmentsAsOptionsArray(), $ad -> post_id );?>
+        </p>
+        <p>
           <label for="advertisement[upload]">Upload</label><br />
           <input type="file" name="advertisement[upload]" />
         </p>
