@@ -29,7 +29,7 @@
             <td><?php echo $group->status; ?></td>
             <td>
               <?php echo ($group -> status == 'pending' ? sprintf('<a href="%s">%s</a>',admin_url('admin.php?advertisement[a]=activate-ad&id=' . $group->ID), 'Activate') : sprintf('<a href="%s">%s</a>',admin_url('admin.php?advertisement[a]=deactivate-ad&id=' . $group->ID), 'Deactivate'));?> /
-              <a href="<?php echo admin_url('admin.php?page=edit-ad&id=' . $group->ID);?>">Edit</a> /
+              <a href="<?php echo admin_url('admin.php?page=edit-group&id=' . $group->ID);?>">Edit</a> /
               <a href="<?php echo admin_url('admin.php?advertisement[a]=delete-ad&id=' . $group->ID);?>">Delete</a>
             </td>
           </tr>

@@ -19,11 +19,11 @@
         </p>
         <p>
           <label for="advertisement[content]">Content</label><br />
-          <input type="text" name="advertisement[content]" value="<?php echo $ad->url; ?>" />
+          <input type="text" name="advertisement[content]" value="<?php echo $ad->content; ?>" />
         </p>
         <p>
           <label for="advertisement[order]">Order</label><br />
-          <input type="text" name="advertisement[order]" value="<?php echo $ad->url; ?>" />
+          <input type="text" name="advertisement[order]" value="<?php echo $ad->order; ?>" />
         </p>
         <p>
           <label for="advertisement[group_id]">Group</label><br />
@@ -35,7 +35,7 @@
         </p>
         <p>
           <label for="advertisement[attachment_id]">Link to Media?</label><br />
-          <?php echo ad_select_tag('advertisement[attachment_id]', $wp -> findAttachmentsAsOptionsArray(), $ad -> post_id );?>
+          <?php echo ad_select_tag('advertisement[attachment_id]', $wp -> findAttachmentsAsOptionsArray(), $ad -> attachment_id );?>
         </p>
         <p>
           <label for="advertisement[upload]">Upload</label><br />

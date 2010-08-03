@@ -139,7 +139,7 @@ class AdvertisementWordpressHelper {
       {
         if(!empty($page -> post_name))
         {
-          $pages[$page->ID] = ucfirst($page -> post_type) . ' - ' . ucfirst($page -> post_name);
+          $pages[$page->ID] = ucfirst($page -> post_type) . ' - ' . ucfirst($page -> post_title);
         }
       }
       return $pages;

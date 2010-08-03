@@ -14,10 +14,6 @@
           <input type="text" name="advertisement[slug]" value="<?php echo $group->slug; ?>" />
         </p>
         <p>
-          <label for="advertisement[content]">Content</label><br />
-          <input type="text" name="advertisement[content]" value="<?php echo $group->content; ?>" />
-        </p>
-        <p>
           <label for="advertisement[order]">Order</label><br />
           <input type="text" name="advertisement[order]" value="<?php echo $group->order; ?>" />
         </p>
@@ -27,4 +23,8 @@
       <input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />&nbsp;
     </p>
   </form>
+  <h2>Related Ads</h2>
+  <div id="poststuff" class="postbox">
+    <?php include('_list.php');?>
+  </div>
 </div>

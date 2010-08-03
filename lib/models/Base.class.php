@@ -1,5 +1,7 @@
 <?php
 
+include(dirname(__FILE__) . "./../helpers/sluggableHelper.class.php");
+
 /**
  * Description of Baseclass
  *
@@ -7,15 +9,21 @@
  */
 class AdvertisementBase {
 
-  private $id;
-  const DATA = 'advertisement';
-  
-  var $primary_key = 'ID';
+  public $id;
+  const DATA = 'data';
+
+  var $pk = 'ID';
+  var $is_timestampable = true;
+  var $is_sluggable = false;
+  var $sluggable_field = 'title';
+  var $is_statusable = false;
 
   public function __construct()
   {
+    $this -> wpdb = $GLOBALS['wpdb'];
     $this -> setFields();
     $this -> setData();
+    $this -> wp = new AdvertisementWordpressHelper();
   }
 
   protected function setData()
@@ -29,6 +37,10 @@ class AdvertisementBase {
     $data[] = (isset($_REQUEST[$name]) ? $_REQUEST[$name] : array());
     array_walk_recursive($data, array($this, 'setVar'));
     $this -> data = (is_array($this -> vars) ? array_intersect_key( $this -> vars, $this -> fields ) : array());
+    if(isset($this -> data['created_at']))
+    {
+      unset($this -> data['created_at']);
+    }
   }
 
   protected function getData()
@@ -65,70 +77,94 @@ class AdvertisementBase {
 
   public function Insert()
   {
-    global $wpdb;
-    $this -> data['created_at'] = date("Y-m-d H:i:s");
-    $wpdb -> insert( $this -> table, $this -> getData());
-    return $wpdb->insert_id;
+    if($this -> is_timestampable)
+    {
+      $this -> data['created_at'] = date("Y-m-d H:i:s");
+    }
+
+    if($this -> is_sluggable)
+    {
+      if(isset($this -> data[$this -> sluggable_field]))
+      {
+        $this -> data['slug'] = sluggableHelper::stripText($this -> data[$this -> sluggable_field]);
+      }
+    }
+
+    $this -> wpdb -> insert( $this -> table, $this -> getData());
+    return $this -> wpdb -> insert_id;
   }
 
   public function Update()
   {
     global $wpdb;
-    return $wpdb->update( $this -> table, $this -> getData(), array($this -> primary_key => $this -> id ) );
+    return $wpdb->update( $this -> table, $this -> getData(), array($this -> pk => $this -> id ) );
   }
 
   public function Delete()
   {
     global $wpdb;
-    $sql = "DELETE FROM $this->table WHERE `" . $this -> primary_key . "` = '" . $this -> id . "'";
+    $sql = "DELETE FROM {$this->table} WHERE `{$this->table}`.`{$this -> pk}` = '{$this -> id}'";
     return $wpdb->query($wpdb->prepare($sql));
   }
 
-  public function Find( $id = null )
+  public function find($options = array())
   {
-    global $wpdb;
-    if(!empty($id))
+    $table = (isset($options['table']) ? $options['table'] : $this -> table);
+
+    $sql = "SELECT * FROM `{$table}`";
+
+    if(isset($options['status']))
     {
-      $sql = "SELECT * FROM $this->table WHERE `" . $this -> primary_key . "` = '" . $id . "'";
-      return $wpdb->get_row($wpdb -> prepare($sql));
+      $options['where']['status'] = 'active';
     }
-    else
+
+    if(isset($options['where']))
     {
-      $p = (isset($_GET['paged']) ? $_GET['paged'] - 1 : 0 );
-      $num = (isset($GET['num'])? $_GET['num'] : 25 );
-      $start = $p * $num;
-      $sql = "SELECT * FROM $this->table LIMIT $start,$num";
-      return $wpdb->get_results($sql);
+      $i = 0;
+      foreach($options['where'] as $field => $value)
+      {
+        if($i > 0)
+        {
+          $sql .= " AND";
+        } else {
+          $sql .= " WHERE";
+        }
+        $sql .= " `{$table}`.`{$field}` = '{$value}'";
+        $i++;
+      }
     }
+
+    if(isset($options['sort']))
+    {
+      $sql .= " ORDER BY `{$table}`.`{$options['sort'][0]}` " . strtoupper($options['sort'][1]);
+    }
+    if(isset($options['limit']))
+    {
+      if(count($options['limit']) == 2)
+      {
+        $sql .= " LIMIT {$options['limit'][0]} ,{$options['limit'][1]}";
+      }
+    }
+    if(isset($options['debug']))
+    {
+      var_dump($sql);exit;
+    }
+    if(isset($options['row']))
+    {
+      return $this -> wpdb -> get_row($this -> wpdb -> prepare($sql));
+    }
+    return $this -> wpdb -> get_results($this -> wpdb -> prepare($sql));
   }
 
-  function findOneBy( $field , $value )
+  public function findOneBy( $options = array())
   {
-    global $wpdb;
-    $sql = "SELECT * FROM `" . $this->table ."` WHERE `" . $field ."` = '" . $value . "'";
-    return $wpdb->get_row($wpdb -> prepare($sql));
+    $options['row'] = true;
+    return $this -> find($options);
   }
 
-  function findBy( $field , $value )
+  public function findById( $id )
   {
-    global $wpdb;
-    $sql = "SELECT * FROM `" . $this->table ."` WHERE `" . $field ."` = '" . $value . "'";
-    return $wpdb->get_results($wpdb -> prepare($sql));
-  }
-
-  function paginate()
-  {
-    global $wpdb;
-    $sql = "SELECT * FROM $this->table";
-    $total = $wpdb->query($wpdb->prepare($sql));
-    $args = array(	'base' => add_query_arg( 'paged', '%#%' ),
-                                    'format' => '?paged=%#%',
-                                    'prev_text' => __('&laquo;'),
-                                    'next_text' => __('&raquo;'),
-                                    'total' => ceil( $total / 25 ),
-                                    'current' => (isset($_GET['paged']) ? $_GET['paged'] : 1));
-    $ret_data = paginate_links( $args );
-    return $ret_data;
+    return $this -> findOneBy(array('field' => $this -> pk,'value' => $id));
   }
 }
 ?>

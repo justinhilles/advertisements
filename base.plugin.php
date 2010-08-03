@@ -154,10 +154,11 @@ if( !class_exists($PLUGIN))
             $this -> ad = $Ad -> _New();
           break;
           case 'edit-ad':
-            $this -> ad = $Ad -> Find( $this->vars['id'] );
+            $this -> ad = $Ad -> findById( $this->vars['id'] );
           break;
            case 'edit-group':
-            $this -> group = $Group -> Find( $this->vars['id'] );
+            $this -> group = $Group -> findById( $this->vars['id'] );
+            $this -> ads = $Ad -> find(array('field' => 'group_id', 'value' => $this -> group -> ID, 'sort' => array('order','asc')));
           break;
         }
       }
