@@ -155,6 +155,7 @@ if( !class_exists($PLUGIN))
           break;
           case 'edit-ad':
             $this -> ad = $Ad -> findById( $this->vars['id'] );
+            var_dump($this -> vars['id']);
           break;
            case 'edit-group':
             $this -> group = $Group -> findById( $this->vars['id'] );

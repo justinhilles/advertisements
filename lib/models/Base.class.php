@@ -164,7 +164,7 @@ class AdvertisementBase {
 
   public function findById( $id )
   {
-    return $this -> findOneBy(array('field' => $this -> pk,'value' => $id));
+    return $this -> findOneBy(array( 'where' => array($this -> pk => $id)));
   }
 }
 ?>
