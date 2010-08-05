@@ -20,8 +20,8 @@ if(!function_exists('getGroupBySlug')):
   function getGroupBySlug( $slug )
   {
     global $Group, $Ad;
-    $group =  $Group -> findOneBy(array('where' => array('slug' => $slug) ,'debug' => true));
-    return $Ad -> find(array('where' => array('group_id' => $group -> ID), 'sort' => array('order','asc'), 'status' => true, 'debug' => true));
+    $group =  $Group -> findOneBy(array('where' => array('slug' => $slug)));
+    return $Ad -> find(array('where' => array('group_id' => $group -> ID), 'sort' => array('order','asc'), 'status' => true));
   }
 endif;
 
