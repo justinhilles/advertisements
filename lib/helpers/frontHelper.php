@@ -26,4 +26,17 @@ if(!function_exists('getGroupBySlug')):
 endif;
 
 
-?>
+if(!function_exists('advertisements'))
+{
+ function advertisements( $slug = null, $ads = array())
+ {
+   if(!is_null($slug))
+   {
+     $ads = getGroupBySlug($slug);
+   }
+   else
+   {
+      $ads = get_advertisements();
+   }
+ }
+}
